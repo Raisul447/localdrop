@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LocalDrop - WiFi File Sharing Panel</title>
+  <!-- Inline SVG Favicon containing the LocalDrop layered logo -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23007aff%22><path d=%22M12 2L2 7l10 5 10-5-10-5z%22/><path d=%22M2 17l10 5 10-5%22 stroke=%22%23007aff%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/><path d=%22M2 12l10 5 10-5%22 stroke=%22%23007aff%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
+  <!-- Modern Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Main App Wrapper -->
+  <div class="app-container">
+    
+    <!-- Top Header Bar -->
+    <header class="app-header">
+      <div class="header-logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor"/>
+          <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="logo-text">
+          <h1>LocalDrop</h1>
+          <p>Local File Transfer</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="app-nav">
+        <button class="nav-tab active" data-tab="files">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Home
+        </button>
+        <button class="nav-tab" data-tab="speedtest">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Speed Test
+        </button>
+        <button class="nav-tab" data-tab="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-icon">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          Settings
+        </button>
+      </nav>
+      
+      <!-- Connection Indicator and QR -->
+      <div class="network-badge-container">
+        <div class="network-badge" id="networkBadge">
+          <span class="status-indicator ping"></span>
+          <span class="network-url" id="serverUrl">Connecting...</span>
+        </div>
+        <button class="qr-trigger-btn" id="openQrBtn" title="Scan QR Code to Connect">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          QR Code
+        </button>
+      </div>
+    </header>
+
+    <!-- Horizontal Wi-Fi Diagnostics Menu Status Bar (Placed right below top bar) -->
+    <div class="wifi-status-bar" id="wifiStatusBar" style="display: none;">
+      <div class="wifi-status-item">
+        <span class="status-indicator wifi-status-dot"></span>
+        <span>Network: <strong id="statusSsid">Detecting...</strong></span>
+      </div>
+      <span class="wifi-status-divider">•</span>
+      <div class="wifi-status-item">
+        <span>Signal: <strong id="statusQuality">-</strong></span>
+      </div>
+      <span class="wifi-status-divider">•</span>
+      <div class="wifi-status-item">
+        <span>Est. Distance: <strong id="statusDistance">-</strong></span>
+      </div>
+      <span class="wifi-status-divider">•</span>
+      <div class="wifi-status-item">
+        <span>Link Rate: <strong id="statusRate">-</strong></span>
+      </div>
+    </div>
+
+    <!-- Main Content Panel SPA Containers -->
+    <main class="app-main">
+      
+      <!-- TAB 1: FILES SHARING VIEW -->
+      <div id="tabContentFiles" class="tab-content active-tab">
+        <div class="tab-grid-layout">
+          <!-- Left Column: Upload Box -->
+          <div class="main-column">
+            <section class="panel-section upload-panel">
+              <div class="panel-card">
+                <h2 class="panel-title">Share Files</h2>
+                <p class="panel-subtitle">Upload files to share with other devices on your WiFi</p>
+                
+                <!-- Drag & Drop Zone -->
+                <div class="drag-drop-zone" id="dropZone">
+                  <input type="file" id="fileInput" class="file-input" multiple>
+                  <div class="drop-zone-content">
+                    <div class="upload-icon-container">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="upload-icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                    </div>
+                    <p class="drop-zone-text-primary">Drag & drop files here</p>
+                    <p class="drop-zone-text-secondary">or <span class="browse-link">browse files</span></p>
+                    <p class="drop-zone-limit">Supports files of any size (unlimited)</p>
+                  </div>
+                </div>
+
+                <!-- Active Uploads List -->
+                <div class="active-uploads-container" id="activeUploadsContainer" style="display: none;">
+                  <h3 class="sub-panel-title">Active Uploads</h3>
+                  <div class="active-uploads-list" id="activeUploadsList">
+                    <!-- Dynamically populated uploads -->
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right Column: Shared Pool -->
+          <div class="main-column">
+            <section class="panel-section files-panel">
+              <div class="panel-card">
+                <div class="panel-header-row">
+                  <div>
+                    <h2 class="panel-title">Shared Pool</h2>
+                    <p class="panel-subtitle">Files available for download on this network</p>
+                  </div>
+                  <span class="file-count-badge" id="fileCountBadge">0 files</span>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-files-state" id="emptyFilesState">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                    <line x1="12" y1="12" x2="12" y2="18"></line>
+                  </svg>
+                  <p>No files shared yet</p>
+                  <p class="empty-sub">Drop files in the box on the left to start sharing.</p>
+                </div>
+
+                <!-- File List -->
+                <div class="file-pool-list" id="filePoolList" style="display: none;">
+                  <!-- Dynamically populated files -->
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: SPEED TEST VIEW -->
+      <div id="tabContentSpeedtest" class="tab-content">
+        <div class="tab-single-layout">
+          <div class="panel-card speedtest-card-panel">
+            <h2 class="panel-title text-center">Local Network Speed Test</h2>
+            <p class="panel-subtitle text-center">Benchmark connection speed directly between this device and the server</p>
+            
+            <div class="speedometer-container">
+              <div class="speedometer-gauge">
+                <svg viewBox="0 0 100 100" class="gauge-svg">
+                  <!-- Background Track Arc (260 deg, gap at bottom) -->
+                  <circle cx="50" cy="50" r="40" class="gauge-track" stroke-linecap="round" transform="rotate(140 50 50)" />
+                  
+                  <!-- Active Speed Fill Arc -->
+                  <circle id="gaugeFill" cx="50" cy="50" r="40" stroke="url(#speedGradient)" stroke-width="6.5" fill="transparent" 
+                          stroke-dasharray="181.5 251.3" stroke-dashoffset="181.5" stroke-linecap="round" transform="rotate(140 50 50)" 
+                          style="transition: stroke-dashoffset 0.25s cubic-bezier(0.1, 0.8, 0.2, 1);" />
+                  
+                  <!-- Definitions for Gradient -->
+                  <defs>
+                    <linearGradient id="speedGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#00f0ff" />
+                      <stop offset="100%" stop-color="#007aff" />
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Dial Ticks Text (0, 5, 10, 50, 100, 250, 500, 750, 1000) -->
+                  <g class="gauge-ticks">
+                    <text x="27.8" y="68.6" class="tick-text">0</text>
+                    <text x="21.3" y="54.0" class="tick-text">5</text>
+                    <text x="23.8" y="37.8" class="tick-text">10</text>
+                    <text x="34.2" y="25.7" class="tick-text">50</text>
+                    <text x="50.0" y="21.0" class="tick-text">100</text>
+                    <text x="65.8" y="25.7" class="tick-text">250</text>
+                    <text x="76.2" y="37.8" class="tick-text">500</text>
+                    <text x="78.7" y="54.0" class="tick-text">750</text>
+                    <text x="72.2" y="68.6" class="tick-text">1000</text>
+                  </g>
+
+                  <!-- Physical Pointer Needle (rotated from -130 to 130 deg) -->
+                  <line id="speedNeedle" x1="50" y1="50" x2="50" y2="15" transform="rotate(-130 50 50)" />
+                  
+                  <!-- Center Cap -->
+                  <circle cx="50" cy="50" r="1.8" class="gauge-center-cap" />
+                </svg>
+                <div class="gauge-inner">
+                  <span class="gauge-value" id="gaugeValue">0.00</span>
+                  <span class="gauge-unit" id="gaugeUnit">Mbps</span>
+                  <span class="gauge-phase" id="gaugePhase">READY</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Testing Status Bar -->
+            <div class="speedtest-status" id="speedTestStatus" style="display: none; justify-content: center; margin-bottom: 20px;">
+              <span class="status-indicator ping animate-pulse" style="margin-right: 8px;"></span>
+              <span id="speedTestStatusText">Testing...</span>
+            </div>
+
+            <!-- Grid Results -->
+            <div class="speedtest-results" id="speedTestResults">
+              <div class="result-item">
+                <span class="result-label">Ping (Latency)</span>
+                <span class="result-value" id="speedLatency">-</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Download Speed</span>
+                <span class="result-value" id="speedDownload">-</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Upload Speed</span>
+                <span class="result-value" id="speedUpload">-</span>
+              </div>
+            </div>
+            
+            <div class="speedtest-action-row" style="text-align: center; margin-top: 30px;">
+              <button class="speedtest-btn" id="startSpeedTestBtn">Start Speed Test</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: SETTINGS VIEW -->
+      <div id="tabContentSettings" class="tab-content">
+        <div class="tab-single-layout">
+          <div class="panel-card settings-card-panel">
+            <h2 class="panel-title">Settings</h2>
+            <p class="panel-subtitle">Manage local transfer properties and view system details</p>
+            
+            <div class="settings-grid">
+              
+              <!-- Dark Mode Toggle -->
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-title">Dark Mode Theme</span>
+                  <span class="setting-desc">Switch interface styling between light and dark modes</span>
+                </div>
+                <div class="setting-control">
+                  <label class="theme-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Storage Location Display -->
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-title">Server Storage Path</span>
+                  <span class="setting-desc">Directory where incoming shared files are buffered</span>
+                </div>
+                <div class="setting-control font-mono" id="storagePathText">
+                  /uploads
+                </div>
+              </div>
+
+              <!-- Auto-Diagnostics refresh toggle -->
+              <div class="setting-row">
+                <div class="setting-info">
+                  <span class="setting-title">Auto-Diagnostics Updates</span>
+                  <span class="setting-desc">Query Wi-Fi network diagnostics periodically (every 10s)</span>
+                </div>
+                <div class="setting-control">
+                  <label class="theme-switch">
+                    <input type="checkbox" id="autoDiagnosticsToggle" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Host Specifications -->
+              <div class="settings-section-divider">Host System Specifications</div>
+
+              <div class="spec-grid">
+                <div class="spec-item">
+                  <span class="spec-label">Server Hostname</span>
+                  <span class="spec-value" id="specHostname">-</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Operating System</span>
+                  <span class="spec-value" id="specOs">-</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">CPU Platform</span>
+                  <span class="spec-value" id="specPlatform">-</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Available System RAM</span>
+                  <span class="spec-value" id="specRam">-</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>LocalDrop File Transporter • Connected via Local Router</p>
+      <p style="margin-top: 6px; font-size: 0.75rem; opacity: 0.8;">Made with ❤️ by <a href="https://raisul.dev" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: none; font-weight: 700;">Raisul.dev</a></p>
+    </footer>
+  </div>
+
+  <!-- QR Code Modal Dialog -->
+  <div class="modal-overlay" id="qrModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Connect Another Device</h3>
+        <button class="modal-close-btn" id="closeQrBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-instruction">Scan this QR code with your mobile phone or tablet to open the web panel instantly.</p>
+        
+        <div class="qr-code-wrapper">
+          <img id="qrImage" src="" alt="QR Code" style="display: block; width: 180px; height: 180px; margin: 0 auto; border-radius: 8px;">
+        </div>
+
+        <div class="qr-addresses-container">
+          <!-- Connection Address 1 -->
+          <div class="qr-address-card">
+            <div class="qr-address-header">
+              <span class="qr-address-badge ip-badge">WiFi IP Address</span>
+            </div>
+            <div class="qr-address-body">
+              <code class="qr-address-url" id="modalUrlText">http://localhost:3000</code>
+              <button class="qr-copy-btn" id="copyUrlBtn" title="Copy Address">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Connection Address 2 -->
+          <div class="qr-address-card" id="alternativeUrlContainer" style="display: none;">
+            <div class="qr-address-header">
+              <span class="qr-address-badge hostname-badge">Alternative Domain Alias</span>
+            </div>
+            <div class="qr-address-body">
+              <code class="qr-address-url" id="modalHostnameText">http://localhost:3000</code>
+              <button class="qr-copy-btn" id="copyHostnameBtn" title="Copy Address">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <p class="modal-note">⚠️ Note: Make sure the device is connected to the same WiFi network.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom logic -->
+  <script src="js/app.js"></script>
+</body>
+</html>
