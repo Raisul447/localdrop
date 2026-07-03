@@ -34,10 +34,15 @@ LocalDrop is a lightweight, high-performance, and completely offline LAN (Local 
 Follow these steps to launch the server on your local machine:
 
 ### 1. Prerequisites
-Ensure you have [Node.js](https://nodejs.org/) installed (v16.x or newer is recommended).
+Ensure you have [Node.js](https://nodejs.org/) installed (v16.x or newer is recommended). You can verify your installation by running:
+
+```bash
+node -v
+npm -v
+```
 
 ### 2. Download and Setup
-Clone or download this repository, navigate to the directory, and install dependencies:
+Clone or download this repository, navigate to the project directory, and install the required dependencies:
 
 ```bash
 # Navigate to project folder
@@ -48,7 +53,7 @@ npm install
 ```
 
 ### 3. Start the Server
-Run the default start script:
+Run the default start script to launch the server:
 
 ```bash
 npm start
@@ -63,10 +68,11 @@ On successful launch, your terminal will log your access addresses:
  WiFi Host Access:  http://Raisuls-MacBook-Air.local:3000
 ==================================================
 ```
+Open any of the displayed addresses in your web browser to access LocalDrop.
 
 ---
 
-## ⚡ Production Deployment (Auto-start via PM2)
+## ⚡ Deployment (Auto-start via PM2)
 
 To keep the LocalDrop server running permanently in the background and ensure it launches automatically when your system boots up, we recommend using [PM2 (Process Manager 2)](https://pm2.keymetrics.io/).
 
@@ -75,39 +81,53 @@ To keep the LocalDrop server running permanently in the background and ensure it
 npm install -g pm2
 ```
 
-### 2. Start the Server Daemon
+### 2. Start LocalDrop
 Start `server.js` and assign it a readable name:
 ```bash
 pm2 start server.js --name localdrop
 ```
 
-### 3. Setup Startup Boot Scripts
-Generate and configure active startup scripts for your OS (macOS/Linux/Windows):
-```bash
-pm2 startup
-```
-*Note: PM2 will output a specific command to copy-paste into your terminal. Run that generated command with `sudo` permissions to register the system service daemon.*
-
-### 4. Save Current Process Configuration
-Lock the active process configuration so it restores on boot:
+### 3. Save the Process List
+Lock the active process configuration so it can be restored later:
 ```bash
 pm2 save
 ```
 
+### 4. Configure Auto-Start on System Boot (macOS / Linux)
+Enable PM2 to start automatically whenever your computer boots up:
+```bash
+pm2 startup
+```
+*Note: PM2 will display a specific command in the terminal. Copy and run that generated command (usually requires `sudo` privileges), then save your process list again by running pm2 save.*
+
+### Windows
+*Note: The `pm2 startup` command is not supported on Windows. To start LocalDrop automatically after signing in, use the Windows Task Scheduler with one of the following options:*
+
+* **Option 1 (Recommended):** Create a task that runs `pm2 resurrect` at User Logon. (Make sure you have already `run pm2` save beforehand).
+* **Option 2 :** Create a task that runs `pm2 start server.js --name localdrop` at User Logon.
+
 ### Useful PM2 Control Commands:
 ```bash
-# Monitor logs in real time
+# Show all running processes and their status
+pm2 status
+
+# View live logs in real time
 pm2 logs localdrop
 
-# Check hardware/memory dashboard
+# Monitor CPU and memory usage via dashboard
 pm2 monit
 
-# Stop or Restart the server
-pm2 stop localdrop
+# Restart the LocalDrop server
 pm2 restart localdrop
 
-# Remove server process from startup
+# Stop the LocalDrop server
+pm2 stop localdrop
+
+# Remove LocalDrop from the PM2 process list
 pm2 delete localdrop
+
+# Save the current process list manually
+pm2 save
 ```
 
 ---
