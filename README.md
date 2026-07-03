@@ -93,18 +93,91 @@ Lock the active process configuration so it can be restored later:
 pm2 save
 ```
 
-### 4. Configure Auto-Start on System Boot (macOS / Linux)
+### 4. Configure Auto-Start on System Boot 
+
+### (macOS / Linux)
 Enable PM2 to start automatically whenever your computer boots up:
 ```bash
 pm2 startup
 ```
 *Note: PM2 will display a specific command in the terminal. Copy and run that generated command (usually requires `sudo` privileges), then save your process list again by running pm2 save.*
 
-### Windows
-*Note: The `pm2 startup` command is not supported on Windows. To start LocalDrop automatically after signing in, use the Windows Task Scheduler with one of the following options:*
 
-* **Option 1 (Recommended):** Create a task that runs `pm2 resurrect` at User Logon. (Make sure you have already `run pm2` save beforehand).
-* **Option 2 :** Create a task that runs `pm2 start server.js --name localdrop` at User Logon.
+### Windows
+
+> **Note:** The `pm2 startup` command is **not supported on Windows**.
+
+To automatically start LocalDrop whenever you sign in to Windows:
+
+#### 1. Save your PM2 process
+
+```bash
+pm2 save
+```
+
+#### 2. Open Task Scheduler
+
+Press the **Windows** key, search for **Task Scheduler**, and open it.
+
+#### 3. Create a New Task
+
+- Click **Create Basic Task...**
+- Name it **LocalDrop**
+- Click **Next**
+
+#### 4. Choose the Trigger
+
+Select:
+
+```text
+When I log on
+```
+
+Click **Next**.
+
+#### 5. Choose the Action
+
+Select:
+
+```text
+Start a program
+```
+
+Click **Next**.
+
+#### 6. Configure the Program
+
+**Program/script**
+
+```text
+C:\Windows\System32\cmd.exe
+```
+
+**Add arguments**
+
+```text
+/c pm2 resurrect
+```
+
+Click **Next**, then **Finish**.
+
+#### 7. Verify
+
+Restart your computer.
+
+After signing in, open Command Prompt and run:
+
+```bash
+pm2 status
+```
+
+If you see:
+
+```text
+localdrop    online
+```
+
+then LocalDrop is starting automatically with Windows.
 
 ### Useful PM2 Control Commands:
 ```bash
